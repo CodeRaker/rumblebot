@@ -79,8 +79,8 @@ async def on_message(message):
         os.system('/projects/rumblebot/rebuild-rumblebot.py &')
 
     if message.content.startswith('!setplaying') and message.author.id in ADMINS:
-        status = message.content.replace('!setplaying ', '')
-        client.change_presence(game=discord.Game(name=status))
+        game_title = message.content.replace('!setplaying ', '')
+        await client.change_presence(game=discord.Game(name=game_title), status=discord.Status("online"))
 
     #Print help/commands menu
     if message.content in ['!commands','!help']:
