@@ -80,7 +80,7 @@ async def on_message(message):
 
     if message.content.startswith('!setplaying') and message.author.id in ADMINS:
         status = message.content.replace('!setplaying ', '')
-        client.change_status(discord.Game(name=status))
+        client.change_presence(game=discord.Game(name=status))
 
     #Print help/commands menu
     if message.content in ['!commands','!help']:
