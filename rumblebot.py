@@ -78,8 +78,9 @@ async def on_message(message):
         await client.logout()
         os.system('/projects/rumblebot/rebuild-rumblebot.py &')
 
-#    if message.content == '!play' and message.author.id in botadmins:
-#        client.change_status(discord.Game(name='Tetris'))
+    if message.content.startswith('!setplaying') and message.author.id in botadmins:
+        status = message.content.replace('!setplaying ', '')
+        client.change_status(discord.Game(name=status))
 
     #Print help/commands menu
     if message.content in ['!commands','!help']:
