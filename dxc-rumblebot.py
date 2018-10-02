@@ -78,7 +78,7 @@ async def on_message(message):
         await client.logout()
         os.system('/projects/rumblebot/rebuild-rumblebot.py &')
 
-    if message.content.startswith('!setplaying') and message.author.id in botadmins:
+    if message.content.startswith('!setplaying') and message.author.id in ADMINS:
         status = message.content.replace('!setplaying ', '')
         client.change_status(game=discord.Game(name=status))
 
