@@ -1,4 +1,4 @@
-import discord, os
+import discord, os, subprocess
 
 client = discord.Client()
 ADMINS = []
