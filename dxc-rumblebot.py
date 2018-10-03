@@ -32,12 +32,12 @@ def is_command(message):
     return str(message.content).split(' ')[0] in ['!hello']
 
 #run system command
-#def command(system_command):
-#    try:
-#        CMD = subprocess.Popen(system_command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.PIPE)
-#        return CMD.stdout, CMD.stderr
-#    except Exception as e:
-#        pass
+def command(system_command):
+    try:
+        CMD = subprocess.Popen(system_command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.PIPE)
+        return CMD.stdout, CMD.stderr
+    except Exception as e:
+        pass
 
 #Actions bot takes on messages in Discord channel
 @client.event
@@ -56,18 +56,6 @@ async def on_message(message):
         embed.add_field(name="Field3", value='Field3_Text')
         await client.send_message(message.channel, embed=embed)
 
-    #Botadmin wants to see botserver public IP
-    #if message.content == '!getip':
-    #    try:
-    #        public_ip = get_public_ip()
-    #        embed = discord.Embed(title='System', description='Public IP', colour=0xDEADBF)
-    #        embed.add_field(name="IP", value="```\n" + public_ip + "```")
-    #        await client.send_message(message.channel, embed=embed)
-
-        #Logs exception
-    #    except Exception as e:
-    #        pass
-
     if message.content == '!id':
         await client.send_message(message.channel, str(message.author.id))
 
@@ -82,6 +70,42 @@ async def on_message(message):
         game_title = message.content.replace('!setplaying ', '')
         await client.change_presence(game=discord.Game(name=game_title), status=discord.Status("online"))
 
+    if message.content.startswith('!rumblebot') and message.author.id in ADMINS:
+        try:
+            system_command = message.content.replace('!rumblebot ', '')
+            c = command(system_command)
+            stdout = c[0].read().decode("utf-8")
+            stderr = c[1].read().decode("utf-8")
+
+            #regular length message
+            #stdout
+            if stdout and len(stdout) < 2000:
+                await client.send_message(message.channel, "stdout\n```bash\n" + stdout + "```")
+            #stderr
+            if stderr and len(stderr) < 2000:
+                await client.send_message(message.channel, "stderr\n```bash\n" + stderr + "```")
+
+            #length exceeds discord message limit
+            #stdout
+            if stdout and len(stdout) > 2000:
+                count = math.ceil(len(stdout) / 1950)
+                for i in range(0, count):
+                    start = i*1950
+                    end = (i+1)*1950
+                    await client.send_message(message.channel, "stdout\n```bash\n" + stdout[start:end] + "```")
+            #stderr
+            if stderr and len(stderr) > 2000:
+                count = math.ceil(len(stderr) / 1950)
+                for i in range(0, count):
+                    start = i*1950
+                    end = (i+1)*1950
+                    await client.send_message(message.channel, "stderr\n```bash\n" + stderr[start:end] + "```")
+
+        #Logs exception
+        except Exception as e:
+            pass
+
+
     #Print help/commands menu
     if message.content in ['!commands','!help']:
         embed = discord.Embed(title='Control', description='Commands for controlling STASI', colour=0xDEADBF)
@@ -91,18 +115,6 @@ async def on_message(message):
 ```""")
         await client.send_message(message.channel, embed=embed)
 
-#Creates a background stats update task
-#async def update_task():
-#    await client.wait_until_ready()
-#    while not client.is_closed:
-#        try:
-            #Update user and statistics data and wait 1 hour
-#            player.initialize()
-#            await asyncio.sleep(3600)
-
-        #Logs exception
-#        except Exception as e:
-#            os.system('echo "' + str(datetime.datetime.now()) + " Update_task: " + str(e) + '" >> ' + logpath)
 
 #Startup code
 #client.loop.create_task(update_task())
